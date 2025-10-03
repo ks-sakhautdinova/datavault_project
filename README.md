@@ -160,9 +160,9 @@ dbt test --select tag:satellite
 dbt test --select tag:raw_vault
 
 
-## Созданные таблицы
+# Созданные таблицы
 
-### **Staging слой (6 таблиц)**
+# Staging слой (6 таблиц)
 - `stg_dim_goodgroups` - Группы товаров
 - `stg_dim_goods` - Товары
 - `stg_fact_cheques` - Чеки
@@ -170,7 +170,7 @@ dbt test --select tag:raw_vault
 - `stg_dim_stores` - Магазины
 - `stg_dim_manufacturers` - Производители
 
-### **Hub таблицы (6 таблиц)**
+# Hub таблицы (6 таблиц)
 - `hub_goodgroups` - Бизнес-ключи групп товаров
 - `hub_goods` - Бизнес-ключи товаров
 - `hub_cheques` - Бизнес-ключи чеков
@@ -178,13 +178,13 @@ dbt test --select tag:raw_vault
 - `hub_stores` - Бизнес-ключи магазинов
 - `hub_manufacturers` - Бизнес-ключи производителей
 
-### **Link таблицы (4 таблицы)**
+# **Link таблицы (4 таблицы)**
 - `link_sale` - Связь: чек ↔ магазин ↔ товар ↔ поставщик
 - `link_good_manufacturer` - Связь: товар ↔ производитель
 - `link_good_goodgroup` - Связь: товар ↔ группа товаров
 - `link_goodgroup_hierarchy` - Иерархия групп товаров
 
-### **Satellite таблицы (6 таблиц)**
+# **Satellite таблицы (6 таблиц)**
 - `sat_suppliers` - Атрибуты поставщиков
 - `sat_stores` - Атрибуты магазинов
 - `sat_manufacturers` - Атрибуты производителей
@@ -192,9 +192,7 @@ dbt test --select tag:raw_vault
 - `sat_goodgroups` - Атрибуты групп товаров
 - `sat_sales` - Атрибуты продаж
 
-## Ключевые особенности реализации
-
-### **Генерация суррогатных ключей**
+# **Генерация суррогатных ключей**
 ```sql
 -- Формула: HASH(business_key || record_source)
 {{ generate_hash_key('good_id', 'OrganicNevaVP') }}
