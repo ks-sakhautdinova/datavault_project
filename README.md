@@ -1,4 +1,4 @@
-# Data Vault 2.0 Project - dbt Implementation
+# Data Vault 2.0 Project 
 
 ## Описание проекта
 
@@ -167,7 +167,3 @@ dbt list --select tag:satellite
 
 # Запуск конкретной модели
 dbt run --select hub_goods
-
-
-
-
