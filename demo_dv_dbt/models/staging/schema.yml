@@ -1,0 +1,117 @@
+version: 2
+
+models:
+  - name: stg_dim_goodgroups
+    description: "Staging таблица для групп товаров"
+    columns:
+      - name: goodgroup_id
+        description: "ID группы товаров"
+      - name: name
+        description: "Название"
+      - name: goodgroup
+        description: "Группа товаров"
+      - name: category
+        description: "Категория"
+      - name: parent_group
+        description: "Родительская группа"
+      - name: group
+        description: "Группа"
+      - name: child_group
+        description: "Дочерняя группа"
+      - name: index_tree
+        description: "Индекс дерева"
+
+  - name: stg_dim_goods
+    description: "Staging таблица для товаров"
+    columns:
+      - name: good_id
+        description: "ID товара"
+      - name: name
+        description: "Название товара"
+      - name: manufacturer_id
+        description: "ID производителя"
+      - name: type
+        description: "Тип товара"
+      - name: group_id
+        description: "ID группы товаров"
+      - name: price_group
+        description: "Ценовая группа"
+      - name: vat
+        description: "НДС"
+      - name: ef2_id
+        description: "EF2 ID"
+
+  - name: stg_fact_cheques
+    description: "Staging таблица для чеков (фактов продаж)"
+    columns:
+      - name: ID_CHEQUE
+        description: "ID чека"
+      - name: dt
+        description: "Дата"
+      - name: TimeID
+        description: "ID времени"
+      - name: CHEQUE_TYPE
+        description: "Тип чека"
+      - name: QUANTITY
+        description: "Количество"
+      - name: PRICE
+        description: "Цена"
+      - name: SUMM_DISCOUNT
+        description: "Сумма скидки"
+      - name: SUMM_CHEQUE_ITEM
+        description: "Сумма позиции чека"
+      - name: ID_Store
+        description: "ID магазина"
+      - name: ID_GOODS
+        description: "ID товара"
+      - name: ID_SUPPLIER
+        description: "ID поставщика"
+      - name: SUM_ACC
+        description: "Сумма аккумулированная"
+      - name: COST
+        description: "Себестоимость"
+      - name: Discount_Name
+        description: "Название скидки"
+
+  - name: stg_dim_suppliers
+    description: "Staging таблица для поставщиков"
+    columns:
+      - name: supplier_id
+        description: "ID поставщика"
+      - name: name
+        description: "Название"
+      - name: legal_name
+        description: "Юридическое название"
+      - name: inn
+        description: "ИНН"
+      - name: address
+        description: "Адрес"
+      - name: phone
+        description: "Телефон"
+
+  - name: stg_dim_stores
+    description: "Staging таблица для магазинов"
+    columns:
+      - name: store_id
+        description: "ID магазина"
+      - name: name
+        description: "Название магазина"
+      - name: store_number
+        description: "Номер магазина"
+      - name: store_format
+        description: "Формат магазина"
+      - name: store_area
+        description: "Площадь магазина"
+      - name: responsible_manager
+        description: "Ответственный менеджер"
+
+  - name: stg_dim_manufacturers
+    description: "Staging таблица для производителей"
+    columns:
+      - name: manufacturer_id
+        description: "ID производителя"
+      - name: name
+        description: "Название производителя"
+
+
+

@@ -1,0 +1,115 @@
+version: 2
+
+models:
+  - name: link_good_manufacturer
+    description: "Link таблица: связывает товары с производителями"
+    columns:
+      - name: good_manufacturer_key
+        description: "Суррогатный ключ Link: HASH(good_id || manufacturer_id || record_source)"
+        tests:
+          - unique
+          - not_null
+      - name: good_key
+        description: "FK на hub_goods.good_key"
+        tests:
+          - not_null
+      - name: manufacturer_key
+        description: "FK на hub_manufacturers.manufacturer_key"
+        tests:
+          - not_null
+      - name: record_source
+        description: "Источник записи"
+        tests:
+          - not_null
+      - name: load_date
+        description: "Дата и время загрузки"
+        tests:
+          - not_null
+          
+  - name: link_sale
+    description: "Link таблица: связывает транзакцию продажи (чек, магазин, товар, поставщик)"
+    meta:
+      business_description: "Основной Link для фактов продаж. Связывает 4 Hub таблицы в единую транзакцию. Содержит дату транзакции (driving key)."
+    columns:
+      - name: sale_key
+        description: "Суррогатный ключ Link: HASH(ID_CHEQUE || ID_Store || ID_GOODS || ID_SUPPLIER || record_source). Дата НЕ включена в hash."
+        tests:
+          - not_null
+      - name: cheque_key
+        description: "FK на hub_cheques.cheque_key - ссылка на чек"
+        tests:
+          - not_null
+      - name: store_key
+        description: "FK на hub_stores.store_key - ссылка на магазин"
+        tests:
+          - not_null
+      - name: good_key
+        description: "FK на hub_goods.good_key - ссылка на товар"
+        tests:
+          - not_null
+      - name: supplier_key
+        description: "FK на hub_suppliers.supplier_key - ссылка на поставщика"
+        tests:
+          - not_null
+      - name: transaction_date
+        description: "Дата транзакции (чека) из источника. Driving key - не участвует в hash, но важен для бизнеса."
+        tests:
+          - not_null
+      - name: record_source
+        description: "Источник записи (OrganicNevaVP)"
+        tests:
+          - not_null  
+      - name: load_date
+        description: "Дата и время загрузки записи в Data Vault"
+        tests:
+          - not_null
+
+  - name: link_goodgroup_hierarchy
+    description: "Link таблица: иерархия групп товаров"
+    columns:
+      - name: gg_hierarchy_key
+        description: "Суррогатный ключ Link: HASH(parent_group || goodgroup_id || record_source)"
+        tests:
+          - unique
+          - not_null
+      - name: parent_goodgroup_key
+        description: "FK на hub_goodgroups.goodgroup_key (родительская группа)"
+        tests:
+          - not_null
+      - name: child_goodgroup_key
+        description: "FK на hub_goodgroups.goodgroup_key (дочерняя группа)"
+        tests:
+          - not_null
+      - name: record_source
+        description: "Источник записи"
+        tests:
+          - not_null
+      - name: load_date
+        description: "Дата и время загрузки"
+        tests:
+          - not_null
+
+  - name: link_good_goodgroup
+    description: "Link таблица: связывает товары с группами товаров"
+    columns:
+      - name: good_group_key
+        description: "Суррогатный ключ Link: HASH(good_id || group_id || record_source)"
+        tests:
+          - unique
+          - not_null
+      - name: good_key
+        description: "FK на hub_goods.good_key"
+        tests:
+          - not_null
+      - name: goodgroup_key
+        description: "FK на hub_goodgroups.goodgroup_key"
+        tests:
+          - not_null
+      - name: record_source
+        description: "Источник записи"
+        tests:
+          - not_null
+      - name: load_date
+        description: "Дата и время загрузки"
+        tests:
+          - not_null

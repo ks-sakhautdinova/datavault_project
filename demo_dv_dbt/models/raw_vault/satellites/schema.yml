@@ -1,0 +1,190 @@
+version: 2
+
+models:
+  - name: sat_suppliers
+    description: "Satellite таблица: атрибуты поставщиков"
+    columns:
+      - name: supplier_key
+        description: "FK на hub_suppliers.supplier_key"
+        tests:
+          - not_null
+      - name: hash_diff
+        description: "Hash всех атрибутов для отслеживания изменений"
+        tests:
+          - not_null
+      - name: name
+        description: "Название поставщика"
+        tests:
+          - not_null
+      - name: legal_name
+        description: "Юридическое название"
+      - name: inn
+        description: "ИНН"
+      - name: address
+        description: "Адрес"
+      - name: phone
+        description: "Телефон"
+      - name: record_source
+        description: "Источник записи"
+        tests:
+          - not_null
+      - name: load_date
+        description: "Дата и время загрузки"
+        tests:
+          - not_null
+
+  - name: sat_stores
+    description: "Satellite таблица: атрибуты магазинов"
+    columns:
+      - name: store_key
+        description: "FK на hub_stores.store_key"
+        tests:
+          - not_null
+      - name: hash_diff
+        description: "Hash всех атрибутов для отслеживания изменений"
+        tests:
+          - not_null
+      - name: name
+        description: "Название магазина"
+        tests:
+          - not_null
+      - name: store_number
+        description: "Номер магазина"
+      - name: store_format
+        description: "Формат магазина"
+      - name: store_area
+        description: "Площадь магазина"
+      - name: responsible_manager
+        description: "Ответственный менеджер"
+      - name: record_source
+        description: "Источник записи"
+        tests:
+          - not_null
+      - name: load_date
+        description: "Дата и время загрузки"
+        tests:
+          - not_null
+
+  - name: sat_manufacturers
+    description: "Satellite таблица: атрибуты производителей"
+    columns:
+      - name: manufacturer_key
+        description: "FK на hub_manufacturers.manufacturer_key"
+        tests:
+          - not_null
+      - name: hash_diff
+        description: "Hash всех атрибутов для отслеживания изменений"
+        tests:
+          - not_null
+      - name: name
+        description: "Название производителя"
+        tests:
+          - not_null
+      - name: record_source
+        description: "Источник записи"
+        tests:
+          - not_null
+      - name: load_date
+        description: "Дата и время загрузки"
+        tests:
+          - not_null
+
+  - name: sat_goods
+    description: "Satellite таблица: атрибуты товаров"
+    columns:
+      - name: good_key
+        description: "FK на hub_goods.good_key"
+        tests:
+          - not_null
+      - name: hash_diff
+        description: "Hash всех атрибутов для отслеживания изменений"
+        tests:
+          - not_null
+      - name: name
+        description: "Название товара"
+        tests:
+          - not_null
+      - name: type
+        description: "Тип товара"
+      - name: price_group
+        description: "Ценовая группа"
+      - name: vat
+        description: "НДС"
+      - name: record_source
+        description: "Источник записи"
+        tests:
+          - not_null
+      - name: load_date
+        description: "Дата и время загрузки"
+        tests:
+          - not_null
+
+  - name: sat_sales
+    description: "Satellite таблица: атрибуты продаж (чеков)"
+    columns:
+    - name: sale_key
+      description: "FK на link_sale.sale_key"
+      tests:
+        - not_null
+        - relationships:
+            to: ref('link_sale')
+            field: sale_key
+    - name: hash_diff
+      description: "Hash всех атрибутов для отслеживания изменений"
+      tests:
+        - not_null
+    - name: CHEQUE_TYPE
+      description: "Тип чека"
+    - name: QUANTITY
+      description: "Количество товара"
+    - name: PRICE
+      description: "Цена за единицу"
+    - name: SUMM_DISCOUNT
+      description: "Сумма скидки"
+    - name: SUMM_CHEQUE_ITEM
+      description: "Сумма позиции чека"
+    - name: SUM_ACC
+      description: "Сумма аккумулированная"
+    - name: COST
+      description: "Себестоимость"
+    - name: Discount_Name
+      description: "Название скидки"
+    - name: record_source
+      description: "Источник записи"
+      tests:
+        - not_null
+    - name: load_date
+      description: "Дата и время загрузки"
+      tests:
+        - not_null
+
+  - name: sat_goodgroups
+    description: "Satellite таблица: атрибуты групп товаров"
+    columns:
+    - name: goodgroup_key
+      description: "FK на hub_goodgroups.goodgroup_key"
+      tests:
+        - not_null
+        - relationships:
+            to: ref('hub_goodgroups')
+            field: goodgroup_key
+    - name: hash_diff
+      description: "Hash всех атрибутов для отслеживания изменений"
+      tests:
+        - not_null
+    - name: name
+      description: "Название группы товаров"
+    - name: goodgroup
+      description: "Группа товаров"
+    - name: category
+      description: "Категория"
+    - name: group
+      description: "Группа"
+    - name: record_source
+      description: "Источник записи"
+      tests:
+        - not_null
+    - name: load_date
+      description: "Дата и время загрузки"
+      tests:
+        - not_null

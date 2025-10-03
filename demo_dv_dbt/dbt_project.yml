@@ -1,0 +1,44 @@
+
+
+name: 'demo_dv_dbt'
+version: '1.0.0'
+
+
+profile: 'demo_dv_dbt'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+docs-paths: ["docs"]
+
+clean-targets:         # directories to be removed by `dbt clean`
+  - "target"
+  - "dbt_packages"
+
+
+
+models:
+  demo_dv_dbt:
+    # Config indicated by + and applies to all files under models/example/
+    example:
+      +materialized: view
+    
+    # Staging layer configuration
+    staging:
+      +materialized: table
+      +tags: ['staging']
+    
+    # Raw Vault layer configuration
+    raw_vault:
+      +materialized: incremental
+      +schema: raw_vault
+      hubs:
+        +tags: ['raw_vault', 'hub']
+      links:
+        +tags: ['raw_vault', 'link']
+      satellites:
+        +tags: ['raw_vault', 'satellite']
+

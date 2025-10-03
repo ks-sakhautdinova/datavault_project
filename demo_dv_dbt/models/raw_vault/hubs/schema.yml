@@ -1,0 +1,106 @@
+version: 2
+
+models:
+  - name: hub_goodgroups
+    description: "Hub таблица для групп товаров"
+    columns:
+      - name: goodgroup_key
+        description: "Суррогатный ключ"
+        tests:
+          - unique
+          - not_null
+      - name: goodgroup_id
+        description: "Ключ группы товаров"
+        tests:
+          - not_null
+      - name: record_source
+        description: "Источник записи"
+      - name: load_date
+        description: "Дата и время загрузки"
+
+  - name: hub_goods
+    description: "Hub таблица для товаров"
+    columns:
+      - name: good_key
+        description: "Суррогатный ключ: HASH(good_id || record_source)"
+        tests:
+          - unique
+          - not_null
+      - name: good_id
+        description: "Бизнес-ключ товара"
+        tests:
+          - not_null
+      - name: record_source
+        description: "Источник записи"
+      - name: load_date
+        description: "Дата и время загрузки"
+
+  - name: hub_manufacturers
+    description: "Hub таблица для производителей"
+    columns:
+      - name: manufacturer_key
+        description: "Суррогатный ключ: HASH(manufacturer_id || record_source)"
+        tests:
+          - unique
+          - not_null
+      - name: manufacturer_id
+        description: "Бизнес-ключ производителя"
+        tests:
+          - not_null
+      - name: record_source
+        description: "Источник записи"
+      - name: load_date
+        description: "Дата и время загрузки"
+
+  - name: hub_stores
+    description: "Hub таблица для магазинов"
+    columns:
+      - name: store_key
+        description: "Суррогатный ключ: HASH(store_id || record_source)"
+        tests:
+          - unique
+          - not_null
+      - name: store_id
+        description: "Бизнес-ключ магазина"
+        tests:
+          - not_null
+      - name: record_source
+        description: "Источник записи"
+      - name: load_date
+        description: "Дата и время загрузки"
+
+  - name: hub_suppliers
+    description: "Hub таблица для поставщиков"
+    columns:
+      - name: supplier_key
+        description: "Суррогатный ключ: HASH(supplier_id || record_source)"
+        tests:
+          - unique
+          - not_null
+      - name: supplier_id
+        description: "Бизнес-ключ поставщика"
+        tests:
+          - not_null
+      - name: record_source
+        description: "Источник записи"
+      - name: load_date
+        description: "Дата и время загрузки"
+
+  - name: hub_cheques
+    description: "Hub таблица для чеков"
+    columns:
+      - name: cheque_key
+        description: "Суррогатный ключ: HASH(ID_CHEQUE || record_source)"
+        tests:
+          - unique
+          - not_null
+      - name: ID_CHEQUE
+        description: "Бизнес-ключ чека"
+        tests:
+          - not_null
+      - name: record_source
+        description: "Источник записи"
+      - name: load_date
+        description: "Дата и время загрузки"
+
+

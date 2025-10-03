@@ -1,0 +1,21 @@
+version: 2
+
+sources:
+  - name: organic_neva_vp
+    description: "Исходная база данных OrganicNevaVP_Sakhautdinova"
+    database: OrganicNevaVP_Sakhautdinova
+    schema: dbo
+    tables:
+      - name: lasmart_dim_goodgroups
+        description: "Группы товаров"
+      - name: lasmart_dim_goods
+        description: "Товары"
+      - name: lasmart_fact_cheques
+        description: "Чеки (факты продаж)"
+      - name: lasmart_dim_suppliers
+        description: "Поставщики"
+      - name: lasmart_dim_stores
+        description: "Магазины"
+      - name: lasmart_dim_manufacturers
+        description: "Производители"
+
