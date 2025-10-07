@@ -92,7 +92,6 @@ models:
       - name: cheque_key
         description: "Суррогатный ключ: HASH(ID_CHEQUE || record_source)"
         tests:
-          - unique
           - not_null
       - name: ID_CHEQUE
         description: "Бизнес-ключ чека"

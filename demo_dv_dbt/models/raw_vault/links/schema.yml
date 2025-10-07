@@ -64,7 +64,7 @@ models:
         tests:
           - not_null
 
-  - name: link_goodgroup_hierarchy
+  - name: link_good_goodgroup_hierarchy
     description: "Link таблица: иерархия групп товаров"
     columns:
       - name: gg_hierarchy_key
