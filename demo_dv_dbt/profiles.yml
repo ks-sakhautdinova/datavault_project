@@ -1,0 +1,27 @@
+demo_dv_dbt:
+  target: "{{ env_var('DBT_TARGET', 'dev') }}"
+  outputs:
+    dev:
+      type: sqlserver
+      driver: "ODBC Driver 18 for SQL Server"
+      server: "{{ env_var('DBT_HOST') }}"
+      port: "{{ env_var('DBT_PORT', '1433') | int }}"
+      database: "{{ env_var('DEV_DBT_DATABASE') }}"
+      schema: "{{ env_var('DEV_DBT_SCHEMA') }}"
+      user: "{{ env_var('DEV_DBT_USER') }}"
+      password: "{{ env_var('DEV_DBT_PASSWORD') }}"
+      encrypt: true
+      trust_cert: true
+      threads: "{{ env_var('DBT_THREADS', '4') | int }}"
+    prod:
+      type: sqlserver
+      driver: "ODBC Driver 18 for SQL Server"
+      server: "{{ env_var('DBT_HOST') }}"
+      port: "{{ env_var('DBT_PORT', '1433') | int }}"
+      database: "{{ env_var('PROD_DBT_DATABASE') }}"
+      schema: "{{ env_var('PROD_DBT_SCHEMA') }}"
+      user: "{{ env_var('PROD_DBT_USER') }}"
+      password: "{{ env_var('PROD_DBT_PASSWORD') }}"
+      encrypt: true
+      trust_cert: true
+      threads: "{{ env_var('PROD_DBT_THREADS', env_var('DBT_THREADS', '8') ) | int }}"
