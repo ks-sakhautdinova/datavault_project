@@ -13,6 +13,7 @@ cache:
 
 # 1) Slim CI в Merge Request: только измененные модели в изолированную схему
 mr_slim_ci:
+  tags: [linux, dbt, sqlserver]
   stage: ci
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
@@ -27,7 +28,7 @@ mr_slim_ci:
   script:
     - dbt deps
     - mkdir -p state
-    # тянем baseline манифест с последнего деплоя dev (если он уже был)
+    # тянем baseline манифест с последнего деплоя dev
     - |
       curl -sfL -H "JOB-TOKEN: $CI_JOB_TOKEN" \
         "$CI_API_V4_URL/projects/$CI_PROJECT_ID/jobs/artifacts/dev/raw/state/manifest.json?job=deploy_dev" \
@@ -44,6 +45,7 @@ mr_slim_ci:
 
 # 2) Полный деплой в dev + публикация baseline manifest.json
 deploy_dev:
+  tags: [linux, dbt, sqlserver]
   stage: deploy
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
