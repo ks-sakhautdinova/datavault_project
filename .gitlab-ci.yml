@@ -11,11 +11,8 @@ variables:
 default:
   before_script:
     - cd "$WORK_DIR"
-    - echo "=== Рабочая директория ==="
     - pwd
-    - ls -la
 
-# Простой тест подключения к БД
 test_connection:
   tags: [linux, dbt, sqlserver]
   stage: test
@@ -25,18 +22,11 @@ test_connection:
   variables:
     DBT_TARGET: "dev"
   script:
-    - echo "=== Информация о подключении ==="
-    - echo "Host: $DBT_HOST"
-    - echo "Port: $DBT_PORT"
-    - echo "Database: $DEV_DBT_DATABASE"
-    - echo "User: $DEV_DBT_USER"
-    - echo "=== Установка зависимостей dbt ==="
+    - echo "Testing connection..."
     - dbt deps
-    - echo "=== Проверка подключения через dbt debug ==="
     - dbt debug --profiles-dir "$DBT_PROFILES_DIR" --target dev
   allow_failure: true
 
-# Deploy для ветки dev
 deploy_dev:
   tags: [linux, dbt, sqlserver]
   stage: deploy
@@ -45,7 +35,7 @@ deploy_dev:
   variables:
     DBT_TARGET: "dev"
   script:
-    - echo "=== Запуск dbt для DEV окружения ==="
+    - echo "=== Deploy dbt DEV ==="
     - dbt deps
     - dbt run --target dev --profiles-dir "$DBT_PROFILES_DIR"
     - dbt test --target dev --profiles-dir "$DBT_PROFILES_DIR"
@@ -54,7 +44,6 @@ deploy_dev:
     paths:
       - demo_dv_dbt/target/
 
-# Deploy для ветки main
 deploy_prod:
   tags: [linux, dbt, sqlserver]
   stage: deploy
@@ -63,11 +52,11 @@ deploy_prod:
   variables:
     DBT_TARGET: "prod"
   script:
-    - echo "=== Запуск dbt для PROD окружения ==="
+    - echo "=== Deploy dbt PROD ==="
     - dbt deps
     - dbt run --target prod --profiles-dir "$DBT_PROFILES_DIR"
     - dbt test --target prod --profiles-dir "$DBT_PROFILES_DIR"
-  when: manual  # Требует ручного запуска
+  when: manual
   artifacts:
     when: always
     paths:
