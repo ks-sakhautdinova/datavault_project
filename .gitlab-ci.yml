@@ -1,4 +1,4 @@
-image: registry.gitlab.com/ks-sakhautdinova/datavault_project/dbt-sqlserver:1.1-retry
+image: registry.gitlab.com/ks-sakhautdinova/datavault_project/dbt-sqlserver:1.1
 
 stages: [ci, deploy]
 
