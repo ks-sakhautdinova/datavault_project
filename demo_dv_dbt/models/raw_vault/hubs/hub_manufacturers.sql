@@ -13,7 +13,7 @@ SELECT
 FROM {{ ref('stg_dim_manufacturers') }} stg
 
 {% if is_incremental() %}
-AND NOT EXISTS (
+WHERE NOT EXISTS (
     SELECT 1 
     FROM {{ this }} hub
     WHERE hub.manufacturer_key = {{ generate_hash_key('stg.manufacturer_id', 'OrganicNevaVP') }}

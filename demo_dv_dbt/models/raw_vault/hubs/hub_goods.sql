@@ -13,7 +13,7 @@ SELECT
 FROM {{ ref('stg_dim_goods') }} stg
 
 {% if is_incremental() %}
-AND NOT EXISTS (
+WHERE NOT EXISTS (
     SELECT 1 
     FROM {{ this }} hub
     WHERE hub.good_key = {{ generate_hash_key('stg.good_id', 'OrganicNevaVP') }}

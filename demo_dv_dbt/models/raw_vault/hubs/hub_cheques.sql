@@ -13,7 +13,7 @@ SELECT
 FROM {{ ref('stg_fact_cheques') }} stg
 
 {% if is_incremental() %}
-AND NOT EXISTS (
+WHERE NOT EXISTS (
     SELECT 1 
     FROM {{ this }} hub
     WHERE hub.cheque_key = {{ generate_hash_key('stg.ID_CHEQUE', 'OrganicNevaVP') }}

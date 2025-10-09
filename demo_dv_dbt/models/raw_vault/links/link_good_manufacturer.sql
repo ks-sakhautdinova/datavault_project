@@ -18,7 +18,7 @@ SELECT
 FROM {{ ref('stg_dim_goods') }} stg
 
 {% if is_incremental() %}
-AND NOT EXISTS (
+WHERE NOT EXISTS (
     SELECT 1 
     FROM {{ this }} lnk
     WHERE lnk.good_manufacturer_key = HASHBYTES('MD5', CONCAT_WS('||'
