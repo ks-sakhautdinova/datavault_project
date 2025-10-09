@@ -1,17 +1,21 @@
-image: registry.gitlab.com/ks-sakhautdinova/datavault_project/dbt-sqlserver:1.1
+image: registry.gitlab.com/ks-sakhautdinova/datavault_project/dbt-sqlserver:1.1-retry
 
 stages: [ci, deploy]
 
 variables:
-  DBT_PROFILES_DIR: "$CI_PROJECT_DIR/.dbt"
+  WORK_DIR: "$CI_PROJECT_DIR/datavault_project/demo_dv_dbt"
+  DBT_PROFILES_DIR: "$WORK_DIR/.dbt"
   DBT_THREADS: "4"
+
+default:
+  before_script:
+    - cd "$WORK_DIR"
 
 cache:
   key: "$CI_COMMIT_REF_SLUG"
   paths:
-    - dbt_packages/
+    - datavault_project/demo_dv_dbt/dbt_packages/
 
-# 1) Slim CI в Merge Request: только измененные модели в изолированную схему
 mr_slim_ci:
   tags: [linux, dbt, sqlserver]
   stage: ci
@@ -28,14 +32,11 @@ mr_slim_ci:
   script:
     - dbt deps
     - mkdir -p state
-    # тянем baseline манифест с последнего деплоя dev
     - |
       curl -sfL -H "JOB-TOKEN: $CI_JOB_TOKEN" \
         "$CI_API_V4_URL/projects/$CI_PROJECT_ID/jobs/artifacts/dev/raw/state/manifest.json?job=deploy_dev" \
         -o state/manifest.json || echo "no state"
-    # временная схема для MR: staging_pr<номер MR>
     - export DEV_DBT_SCHEMA="${DEV_DBT_SCHEMA}_pr${CI_MERGE_REQUEST_IID}"
-    # slim CI: если есть state — собираем только изменённые модели, иначе один раз полный build
     - |
       if [ -f state/manifest.json ]; then
         dbt build --select state:modified+ --defer --state state --target dev --profiles-dir "$DBT_PROFILES_DIR"
@@ -43,7 +44,6 @@ mr_slim_ci:
         dbt build --target dev --profiles-dir "$DBT_PROFILES_DIR"
       fi
 
-# 2) Полный деплой в dev + публикация baseline manifest.json
 deploy_dev:
   tags: [linux, dbt, sqlserver]
   stage: deploy
@@ -63,5 +63,5 @@ deploy_dev:
     - mkdir -p state && cp target/manifest.json state/manifest.json
   artifacts:
     paths:
-      - target/
-      - state/manifest.json
+      - datavault_project/demo_dv_dbt/target/
+      - datavault_project/demo_dv_dbt/state/manifest.json
