@@ -29,12 +29,9 @@ test_connection:
     - echo "Host: $DBT_HOST"
     - echo "Port: $DBT_PORT"
     - echo "Database: $DEV_DBT_DATABASE"
-    - echo "Schema: $DEV_DBT_SCHEMA"
     - echo "User: $DEV_DBT_USER"
-    - echo ""
     - echo "=== Установка зависимостей dbt ==="
     - dbt deps
-    - echo ""
     - echo "=== Проверка подключения через dbt debug ==="
     - dbt debug --profiles-dir "$DBT_PROFILES_DIR" --target dev
   allow_failure: true
