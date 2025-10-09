@@ -3,8 +3,8 @@ image: registry.gitlab.com/ks-sakhautdinova/datavault_project/dbt-sqlserver:1.1
 stages: [ci, deploy]
 
 variables:
-  WORK_DIR: "$CI_PROJECT_DIR/datavault_project/demo_dv_dbt"
-  DBT_PROFILES_DIR: "$WORK_DIR/.dbt"
+  WORK_DIR: "$CI_PROJECT_DIR/demo_dv_dbt"
+  DBT_PROFILES_DIR: "$WORK_DIR"
   DBT_THREADS: "4"
 
 default:
@@ -14,7 +14,7 @@ default:
 cache:
   key: "$CI_COMMIT_REF_SLUG"
   paths:
-    - datavault_project/demo_dv_dbt/dbt_packages/
+    - demo_dv_dbt/dbt_packages/
 
 mr_slim_ci:
   tags: [linux, dbt, sqlserver]
@@ -63,5 +63,5 @@ deploy_dev:
     - mkdir -p state && cp target/manifest.json state/manifest.json
   artifacts:
     paths:
-      - datavault_project/demo_dv_dbt/target/
-      - datavault_project/demo_dv_dbt/state/manifest.json
+      - demo_dv_dbt/target/
+      - demo_dv_dbt/state/manifest.json
