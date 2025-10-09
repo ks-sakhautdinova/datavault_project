@@ -1,67 +1,77 @@
 image: registry.gitlab.com/ks-sakhautdinova/datavault_project/dbt-sqlserver:1.1
 
-stages: [ci, deploy]
+stages:
+  - test
+  - deploy
 
 variables:
   WORK_DIR: "$CI_PROJECT_DIR/demo_dv_dbt"
   DBT_PROFILES_DIR: "$WORK_DIR"
-  DBT_THREADS: "4"
 
 default:
   before_script:
     - cd "$WORK_DIR"
+    - echo "=== Рабочая директория ==="
+    - pwd
+    - ls -la
 
-cache:
-  key: "$CI_COMMIT_REF_SLUG"
-  paths:
-    - demo_dv_dbt/dbt_packages/
-
-mr_slim_ci:
+# Простой тест подключения к БД
+test_connection:
   tags: [linux, dbt, sqlserver]
-  stage: ci
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  stage: test
+  only:
+    - dev
+    - main
   variables:
     DBT_TARGET: "dev"
-    DBT_HOST: "$DBT_HOST"
-    DBT_PORT: "$DBT_PORT"
-    DEV_DBT_DATABASE: "$DEV_DBT_DATABASE"
-    DEV_DBT_SCHEMA: "$DEV_DBT_SCHEMA"
-    DEV_DBT_USER: "$DEV_DBT_USER"
-    DEV_DBT_PASSWORD: "$DEV_DBT_PASSWORD"
   script:
+    - echo "=== Информация о подключении ==="
+    - echo "Host: $DBT_HOST"
+    - echo "Port: $DBT_PORT"
+    - echo "Database: $DEV_DBT_DATABASE"
+    - echo "Schema: $DEV_DBT_SCHEMA"
+    - echo "User: $DEV_DBT_USER"
+    - echo ""
+    - echo "=== Установка зависимостей dbt ==="
     - dbt deps
-    - mkdir -p state
-    - |
-      curl -sfL -H "JOB-TOKEN: $CI_JOB_TOKEN" \
-        "$CI_API_V4_URL/projects/$CI_PROJECT_ID/jobs/artifacts/dev/raw/state/manifest.json?job=deploy_dev" \
-        -o state/manifest.json || echo "no state"
-    - export DEV_DBT_SCHEMA="${DEV_DBT_SCHEMA}_pr${CI_MERGE_REQUEST_IID}"
-    - |
-      if [ -f state/manifest.json ]; then
-        dbt build --select state:modified+ --defer --state state --target dev --profiles-dir "$DBT_PROFILES_DIR"
-      else
-        dbt build --target dev --profiles-dir "$DBT_PROFILES_DIR"
-      fi
+    - echo ""
+    - echo "=== Проверка подключения через dbt debug ==="
+    - dbt debug --profiles-dir "$DBT_PROFILES_DIR" --target dev
+  allow_failure: true
 
+# Deploy для ветки dev
 deploy_dev:
   tags: [linux, dbt, sqlserver]
   stage: deploy
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "dev"'
+  only:
+    - dev
   variables:
     DBT_TARGET: "dev"
-    DBT_HOST: "$DBT_HOST"
-    DBT_PORT: "$DBT_PORT"
-    DEV_DBT_DATABASE: "$DEV_DBT_DATABASE"
-    DEV_DBT_SCHEMA: "$DEV_DBT_SCHEMA"
-    DEV_DBT_USER: "$DEV_DBT_USER"
-    DEV_DBT_PASSWORD: "$DEV_DBT_PASSWORD"
   script:
+    - echo "=== Запуск dbt для DEV окружения ==="
     - dbt deps
-    - dbt build --target dev --profiles-dir "$DBT_PROFILES_DIR"
-    - mkdir -p state && cp target/manifest.json state/manifest.json
+    - dbt run --target dev --profiles-dir "$DBT_PROFILES_DIR"
+    - dbt test --target dev --profiles-dir "$DBT_PROFILES_DIR"
   artifacts:
+    when: always
     paths:
       - demo_dv_dbt/target/
-      - demo_dv_dbt/state/manifest.json
+
+# Deploy для ветки main
+deploy_prod:
+  tags: [linux, dbt, sqlserver]
+  stage: deploy
+  only:
+    - main
+  variables:
+    DBT_TARGET: "prod"
+  script:
+    - echo "=== Запуск dbt для PROD окружения ==="
+    - dbt deps
+    - dbt run --target prod --profiles-dir "$DBT_PROFILES_DIR"
+    - dbt test --target prod --profiles-dir "$DBT_PROFILES_DIR"
+  when: manual  # Требует ручного запуска
+  artifacts:
+    when: always
+    paths:
+      - demo_dv_dbt/target/
