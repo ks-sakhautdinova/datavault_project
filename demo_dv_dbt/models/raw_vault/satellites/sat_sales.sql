@@ -38,7 +38,7 @@ SELECT
 FROM {{ ref('stg_fact_cheques') }} stg
 
 {% if is_incremental() %}
-AND NOT EXISTS (
+WHERE NOT EXISTS (
     SELECT 1 
     FROM {{ this }} sat
     WHERE sat.sale_key = HASHBYTES('MD5', CONCAT_WS('||'

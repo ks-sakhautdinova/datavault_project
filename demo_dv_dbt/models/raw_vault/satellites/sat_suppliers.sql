@@ -26,7 +26,7 @@ FROM {{ ref('stg_dim_suppliers') }} stg
 
 
 {% if is_incremental() %}
-AND NOT EXISTS (
+WHERE NOT EXISTS (
     SELECT 1 
     FROM {{ this }} sat
     WHERE sat.supplier_key = {{ generate_hash_key('stg.supplier_id', 'OrganicNevaVP') }}

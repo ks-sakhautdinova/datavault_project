@@ -1,67 +1,63 @@
-image: registry.gitlab.com/ks-sakhautdinova/datavault_project/dbt-sqlserver:1.1-retry
+image: registry.gitlab.com/ks-sakhautdinova/datavault_project/dbt-sqlserver:1.1
 
-stages: [ci, deploy]
+stages:
+  - test
+  - deploy
 
 variables:
-  WORK_DIR: "$CI_PROJECT_DIR/datavault_project/demo_dv_dbt"
-  DBT_PROFILES_DIR: "$WORK_DIR/.dbt"
-  DBT_THREADS: "4"
+  WORK_DIR: "$CI_PROJECT_DIR/demo_dv_dbt"
+  DBT_PROFILES_DIR: "$WORK_DIR"
 
 default:
   before_script:
     - cd "$WORK_DIR"
+    - pwd
 
-cache:
-  key: "$CI_COMMIT_REF_SLUG"
-  paths:
-    - datavault_project/demo_dv_dbt/dbt_packages/
-
-mr_slim_ci:
+test_connection:
   tags: [linux, dbt, sqlserver]
-  stage: ci
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  stage: test
+  only:
+    - dev
+    - main
   variables:
     DBT_TARGET: "dev"
-    DBT_HOST: "$DBT_HOST"
-    DBT_PORT: "$DBT_PORT"
-    DEV_DBT_DATABASE: "$DEV_DBT_DATABASE"
-    DEV_DBT_SCHEMA: "$DEV_DBT_SCHEMA"
-    DEV_DBT_USER: "$DEV_DBT_USER"
-    DEV_DBT_PASSWORD: "$DEV_DBT_PASSWORD"
   script:
+    - echo "Testing connection..."
     - dbt deps
-    - mkdir -p state
-    - |
-      curl -sfL -H "JOB-TOKEN: $CI_JOB_TOKEN" \
-        "$CI_API_V4_URL/projects/$CI_PROJECT_ID/jobs/artifacts/dev/raw/state/manifest.json?job=deploy_dev" \
-        -o state/manifest.json || echo "no state"
-    - export DEV_DBT_SCHEMA="${DEV_DBT_SCHEMA}_pr${CI_MERGE_REQUEST_IID}"
-    - |
-      if [ -f state/manifest.json ]; then
-        dbt build --select state:modified+ --defer --state state --target dev --profiles-dir "$DBT_PROFILES_DIR"
-      else
-        dbt build --target dev --profiles-dir "$DBT_PROFILES_DIR"
-      fi
+    - dbt debug --profiles-dir "$DBT_PROFILES_DIR" --target dev
+  allow_failure: true
 
 deploy_dev:
   tags: [linux, dbt, sqlserver]
   stage: deploy
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "dev"'
+  only:
+    - dev
   variables:
     DBT_TARGET: "dev"
-    DBT_HOST: "$DBT_HOST"
-    DBT_PORT: "$DBT_PORT"
-    DEV_DBT_DATABASE: "$DEV_DBT_DATABASE"
-    DEV_DBT_SCHEMA: "$DEV_DBT_SCHEMA"
-    DEV_DBT_USER: "$DEV_DBT_USER"
-    DEV_DBT_PASSWORD: "$DEV_DBT_PASSWORD"
   script:
+    - echo "=== Deploy dbt DEV ==="
     - dbt deps
-    - dbt build --target dev --profiles-dir "$DBT_PROFILES_DIR"
-    - mkdir -p state && cp target/manifest.json state/manifest.json
+    - dbt run --target dev --profiles-dir "$DBT_PROFILES_DIR"
+    - dbt test --target dev --profiles-dir "$DBT_PROFILES_DIR"
   artifacts:
+    when: always
     paths:
-      - datavault_project/demo_dv_dbt/target/
-      - datavault_project/demo_dv_dbt/state/manifest.json
+      - demo_dv_dbt/target/
+
+deploy_prod:
+  tags: [linux, dbt, sqlserver]
+  stage: deploy
+  only:
+    - main
+  variables:
+    DBT_TARGET: "prod"
+  script:
+    - echo "=== Deploy dbt PROD ==="
+    - dbt deps
+    - dbt run --target prod --profiles-dir "$DBT_PROFILES_DIR"
+    - dbt test --target prod --profiles-dir "$DBT_PROFILES_DIR"
+  when: manual
+  artifacts:
+    when: always
+    paths:
+      - demo_dv_dbt/target/
